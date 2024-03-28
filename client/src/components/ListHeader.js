@@ -5,7 +5,7 @@ import logomini from "../logo_mini.png";
 
 const ListHeader = ({ getData }) => {
   const [showModal, setShowModal] = useState(false);
-  const [cookies, removeCookie] = useCookies(null);
+  const [cookies, , removeCookie] = useCookies(null);
 
   const signOut = () => {
     removeCookie("User");

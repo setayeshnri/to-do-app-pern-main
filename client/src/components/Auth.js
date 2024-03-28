@@ -3,7 +3,7 @@ import { useCookies } from "react-cookie";
 import logo from "../Logo.png";
 
 const Auth = () => {
-  const [setCookie] = useCookies(null);
+  const [, setCookie] = useCookies(null);
   const [isLogin, setIsLogin] = useState(true);
   const [error, setError] = useState(null);
   const [username, setUsername] = useState(null);
@@ -57,6 +57,7 @@ const Auth = () => {
         } else setError(res.message);
       } catch (error) {
         setError("Something went wrong");
+        throw error;
       }
     }
   };
