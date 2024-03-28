@@ -1,0 +1,16 @@
+{
+  "name": "pern-todo-app-with-authentication",
+  "version": "1.0.0",
+  "scripts": {
+    "client": "cd client && npm start",
+    "server": "cd server && npm start"
+  },
+  "proxy": "http://localhost:5000",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
