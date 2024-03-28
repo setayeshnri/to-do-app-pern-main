@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import { toast } from "react-toastify";
 import { useCookies } from "react-cookie";
 import logo from "../Logo.png";
 
 const Auth = () => {
-  const [cookies, setCookie, removeCookie] = useCookies(null);
+  const [setCookie] = useCookies(null);
   const [isLogin, setIsLogin] = useState(true);
   const [error, setError] = useState(null);
   const [username, setUsername] = useState(null);
@@ -101,9 +100,7 @@ const Auth = () => {
           <button
             onClick={() => viewLogin(false)}
             style={{
-              backgroundColor: !isLogin
-                ? "#53724A"
-                : "#CFD8BF",
+              backgroundColor: !isLogin ? "#53724A" : "#CFD8BF",
             }}
           >
             Sign Up
@@ -111,9 +108,7 @@ const Auth = () => {
           <button
             onClick={() => viewLogin(true)}
             style={{
-              backgroundColor: isLogin
-                ? "#53724A"
-                : "#CFD8BF",
+              backgroundColor: isLogin ? "#53724A" : "#CFD8BF",
             }}
           >
             Login

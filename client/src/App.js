@@ -7,7 +7,7 @@ import Auth from "./components/Auth";
 import { useCookies } from "react-cookie";
 
 function App() {
-  const [cookies, setCookie, removeCookie] = useCookies(null);
+  const [cookies] = useCookies(null);
   const authToken = cookies.AuthToken;
   const user = cookies.User;
   const [tasks, setTasks] = useState([]);
@@ -25,7 +25,7 @@ function App() {
 
   useEffect(() => {
     getData();
-  }, []);
+  });
 
   const sortedTasks = tasks?.sort(
     (a, b) => new Date(b.date) - new Date(a.date)
