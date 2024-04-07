@@ -1,9 +1,10 @@
 import React, { useState } from "react";
+import { toast } from "react-toastify";
 import { useCookies } from "react-cookie";
 import logo from "../Logo.png";
 
 const Auth = () => {
-  const [, setCookie] = useCookies(null);
+  const [cookies, setCookie, removeCookie] = useCookies(null);
   const [isLogin, setIsLogin] = useState(true);
   const [error, setError] = useState(null);
   const [username, setUsername] = useState(null);
@@ -52,12 +53,12 @@ const Auth = () => {
         // If there's an error, it sets the error message.
         const res = await response.json();
         if (response.status === 200) {
-          setCookie("User", res.user);
+          setCookie("Username", res.username);
+          setCookie("UserId", res.id);
           setCookie("AuthToken", res.token);
         } else setError(res.message);
       } catch (error) {
         setError("Something went wrong");
-        throw error;
       }
     }
   };

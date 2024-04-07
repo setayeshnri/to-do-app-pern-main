@@ -3,13 +3,15 @@ import Modal from "./Modal";
 import { useCookies } from "react-cookie";
 import logomini from "../logo_mini.png";
 
-const ListHeader = ({ getData }) => {
+const ListHeader = ({ getData, clearData }) => {
   const [showModal, setShowModal] = useState(false);
-  const [cookies, , removeCookie] = useCookies(null);
+  const [cookies, setCookie, removeCookie] = useCookies(null);
 
   const signOut = () => {
-    removeCookie("User");
+    removeCookie("Username");
     removeCookie("AuthToken");
+    removeCookie("UserId");
+    clearData();
   };
   return (
     <div className="list-header">
@@ -20,7 +22,7 @@ const ListHeader = ({ getData }) => {
           ADD NEW
         </button>
         <button className="signout" onClick={signOut}>
-          SIGN OUT {cookies && `(${cookies?.User.username})`}
+          SIGN OUT {cookies && `(${cookies?.Username})`}
         </button>
       </div>
       {showModal && (

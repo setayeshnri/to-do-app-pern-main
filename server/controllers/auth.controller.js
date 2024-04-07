@@ -57,12 +57,15 @@ exports.signup = async (req, res) => {
     It includes the JWT token and user information (id and username).
     */
 
-    const token = jwt.sign({ id }, "secretkey", { expiresIn: "1h" });
+    const token = jwt.sign({ id, username }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
     res.status(200).json({
-      staus: "success",
+      status: "success",
       message: "account created",
       token,
-      user: { id, username },
+      username,
+      id,
     });
   } catch (error) {
     res.status(500).json({
@@ -88,20 +91,20 @@ exports.login = async (req, res) => {
 
     if (user.rowCount === 0)
       return res.status(404).json({
-        staus: "fail",
+        status: "fail",
         message: "Invalid username or password",
       });
 
     const checkPassword = bcrypt.compareSync(password, user.rows[0].password);
     if (!checkPassword)
       return res.status(404).json({
-        staus: "fail",
+        status: "fail",
         message: "Invalid username or password",
       });
     const id = user.rows[0].id;
     const token = jwt.sign({ id }, "secretkey", { expiresIn: "1h" });
     res.status(200).json({
-      staus: "success",
+      status: "success",
       message: "login success",
       token,
       user: { id, username: user.rows[0].username },

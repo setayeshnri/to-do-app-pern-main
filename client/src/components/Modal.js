@@ -3,10 +3,10 @@ import { useCookies } from "react-cookie";
 import { toast } from "react-toastify";
 
 const Modal = ({ mode, setShowModal, getData, task }) => {
-  const [cookies] = useCookies(null);
+  const [cookies, setCookie, removeCookie] = useCookies(null);
   const editMode = mode === "edit" ? true : false;
   const [data, setData] = useState({
-    user_id: editMode ? task.user_id : cookies.User.id,
+    user_id: editMode ? task.user_id : cookies.UserId,
     title: editMode ? task.title : "",
     progress: editMode ? task.progress : 50,
     data: editMode ? task.date : new Date(),
@@ -18,11 +18,15 @@ const Modal = ({ mode, setShowModal, getData, task }) => {
       return toast.error("Task is required");
     }
     try {
+      console.log("auth token >>>", cookies.AuthToken);
       const response = await fetch(
         `${process.env.REACT_APP_API_BASE_URL}todos`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: cookies.AuthToken,
+          },
           body: JSON.stringify(data),
         }
       );
@@ -46,7 +50,10 @@ const Modal = ({ mode, setShowModal, getData, task }) => {
         `${process.env.REACT_APP_API_BASE_URL}todos/${task.id}`,
         {
           method: "PATCH",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: cookies.AuthToken,
+          },
           body: JSON.stringify(data),
         }
       );

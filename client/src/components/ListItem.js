@@ -3,9 +3,11 @@ import { useState } from "react";
 import Modal from "./Modal";
 import { toast } from "react-toastify";
 import ProgressBar from "./ProgressBar";
+import { useCookies } from "react-cookie";
 
 const ListItem = ({ task, getData }) => {
   const [showModal, setShowModal] = useState(false);
+  const [cookies, setCookie, removeCookie] = useCookies(null);
 
   const deleteTodo = async () => {
     try {
@@ -13,6 +15,9 @@ const ListItem = ({ task, getData }) => {
         `${process.env.REACT_APP_API_BASE_URL}todos/${task.id}`,
         {
           method: "DELETE",
+          headers: {
+            Authorization: cookies.AuthToken,
+          },
         }
       );
       if (response.status === 200) {

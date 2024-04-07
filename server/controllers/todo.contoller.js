@@ -13,7 +13,7 @@ const { v4: uuidv4 } = require("uuid");
 
 exports.createTodo = async (req, res) => {
   try {
-    let { user_id, title, progress, date } = req.body;
+    let { title, progress, date } = req.body;
 
     /*
     This generates a new UUID (Universally Unique Identifier) using uuidv4() 
@@ -35,7 +35,13 @@ exports.createTodo = async (req, res) => {
     It inserts a new todo into the database.
     */
 
-    const newTodo = await pool.query(sql, [id, user_id, title, progress, date]);
+    const newTodo = await pool.query(sql, [
+      id,
+      req.userId,
+      title,
+      progress,
+      date,
+    ]);
     res.status(201).json({
       status: "success",
       message: "Todo created",
@@ -60,11 +66,27 @@ operations on the todos table in the database and handling success and error res
 exports.updateTodo = async (req, res) => {
   try {
     const { id } = req.params;
-    let { user_id, title, progress, date } = req.body;
+    let { title, progress, date } = req.body;
+
+    const result = await pool.query("SELECT * FROM todos WHERE id=$1", [id]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({
+        status: "fail",
+        message: `Todo with id ${id} not found`,
+      });
+    }
+
+    const todo = result.rows[0];
+
+    if (req.userId !== todo.user_id) {
+      res.status(403).send();
+    }
+
     title = title.trim();
     const updatedTodo = await pool.query(
-      "UPDATE todos SET user_id=$1, title=$2,progress=$3,date=$4 WHERE id=$5",
-      [user_id, title, progress, date, id]
+      "UPDATE todos SET title=$1,progress=$2,date=$3 WHERE id=$4",
+      [title, progress, date, id]
     );
     res.status(200).json({
       status: "success",
@@ -84,6 +106,22 @@ exports.updateTodo = async (req, res) => {
 exports.deleteTodo = async (req, res) => {
   try {
     const { id } = req.params;
+
+    const result = await pool.query("SELECT * FROM todos WHERE id=$1", [id]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({
+        status: "fail",
+        message: `Todo with id ${id} not found`,
+      });
+    }
+
+    const todo = result.rows[0];
+
+    if (req.userId !== todo.user_id) {
+      res.status(403).send();
+    }
+
     await pool.query("DELETE FROM todos WHERE id=$1", [id]);
     res.status(200).json({
       status: "success",
@@ -101,9 +139,10 @@ exports.deleteTodo = async (req, res) => {
 
 exports.getAllTodos = async (req, res) => {
   try {
+    // TODO Remove this endpoint - not safe - not used in client either
     const todos = await pool.query("SELECT * FROM todos");
     res.status(200).json({
-      staus: "success",
+      status: "success",
       result: todos.rowCount,
       data: { todos: todos.rows },
     });
@@ -121,16 +160,22 @@ exports.getTodo = async (req, res) => {
   try {
     let { id } = req.params;
     // id = parseInt(id);
-    const todo = await pool.query("SELECT * FROM todos WHERE id=$1", [id]);
-    if (todo.rowCount === 0) {
+    const result = await pool.query("SELECT * FROM todos WHERE id=$1", [id]);
+    if (result.rowCount === 0) {
       return res.status(404).json({
-        staus: "fail",
+        status: "fail",
         message: `Todo with id ${id} not found`,
       });
     }
+
+    const todo = result.rows[0];
+    if (req.userId !== todo.user_id) {
+      res.status(403).send();
+    }
+
     res.status(200).json({
-      staus: "success",
-      data: { todo: todo.rows[0] },
+      status: "success",
+      data: { todo },
     });
   } catch (error) {
     res.status(500).json({
@@ -145,11 +190,16 @@ exports.getTodo = async (req, res) => {
 exports.getUserTodos = async (req, res) => {
   try {
     const { id } = req.params;
+
+    if (id !== req.userId) {
+      res.status(403).send();
+    }
+
     const todos = await pool.query("SELECT * FROM todos WHERE user_id=$1", [
       id,
     ]);
     res.status(200).json({
-      staus: "success",
+      status: "success",
       result: todos.rowCount,
       data: { todos: todos.rows },
     });
