@@ -7,7 +7,7 @@ import { useCookies } from "react-cookie";
 
 const ListItem = ({ task, getData }) => {
   const [showModal, setShowModal] = useState(false);
-  const [cookies, setCookie, removeCookie] = useCookies(null);
+  const [cookies] = useCookies(null);
 
   const deleteTodo = async () => {
     try {

@@ -3,7 +3,7 @@ import { useCookies } from "react-cookie";
 import { toast } from "react-toastify";
 
 const Modal = ({ mode, setShowModal, getData, task }) => {
-  const [cookies, setCookie, removeCookie] = useCookies(null);
+  const [cookies] = useCookies(null);
   const editMode = mode === "edit" ? true : false;
   const [data, setData] = useState({
     user_id: editMode ? task.user_id : cookies.UserId,

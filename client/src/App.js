@@ -1,5 +1,5 @@
 import "react-toastify/dist/ReactToastify.css";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import ListHeader from "./components/ListHeader";
 import ListItem from "./components/ListItem";
 import { ToastContainer } from "react-toastify";
@@ -7,11 +7,11 @@ import Auth from "./components/Auth";
 import { useCookies } from "react-cookie";
 
 function App() {
-  const [cookies, setCookie, removeCookie] = useCookies(null);
+  const [cookies] = useCookies(null);
   const authToken = cookies.AuthToken;
   const [tasks, setTasks] = useState([]);
 
-  const getData = async () => {
+  const getData = useCallback(async () => {
     if (!cookies.UserId) return;
 
     try {
@@ -27,13 +27,13 @@ function App() {
       setTasks(res.data.todos);
       return res;
     } catch (error) {}
-  };
+  }, [cookies.AuthToken, cookies.UserId]);
 
   const clearData = () => setTasks([]);
 
   useEffect(() => {
     getData();
-  }, [cookies]);
+  }, [cookies, getData]);
 
   const sortedTasks = tasks?.sort(
     (a, b) => new Date(b.date) - new Date(a.date)
